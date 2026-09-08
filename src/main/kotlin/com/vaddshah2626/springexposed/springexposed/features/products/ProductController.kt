@@ -1,5 +1,10 @@
 package com.vaddshah2626.springexposed.springexposed.features.products
 
+import com.vaddshah2626.springexposed.springexposed.common.api.PageResponse
+import com.vaddshah2626.springexposed.springexposed.features.products.dtos.CreateProductRequest
+import com.vaddshah2626.springexposed.springexposed.features.products.dtos.ProductDto
+import com.vaddshah2626.springexposed.springexposed.features.products.dtos.ProductFilter
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -9,13 +14,29 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.RequestParam
+
 
 @RestController
 @RequestMapping("/api/products")
 class ProductController(private val productService: ProductService) {
 
     @GetMapping
-    fun getAll(): List<ProductDto> = productService.getAllProducts()
+    fun getAllPaginated(
+        @RequestParam(required = false, defaultValue = "1") page: Int,
+        @RequestParam(required = false, defaultValue = "10") size: Int,
+        @RequestParam(required = false, defaultValue = "") search: String,
+        @RequestParam(required = false, defaultValue = "0") stock: Int,
+    ): ResponseEntity<PageResponse<ProductDto>> {
+        val filter = ProductFilter(
+            search = search.ifEmpty { null },
+            stock = if(stock == 0) null else stock,
+            page = page,
+            size = size,
+        )
+        val result = productService.getAllProducts(filter)
+        return ResponseEntity.ok(result)
+    }
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Long): ResponseEntity<ProductDto> {
@@ -25,8 +46,8 @@ class ProductController(private val productService: ProductService) {
     }
 
     @PostMapping
-    fun create(@RequestBody product: ProductDto): ResponseEntity<ProductDto> {
-        val created = productService.createProduct(product)
+    fun create(@Valid @RequestBody request: CreateProductRequest): ResponseEntity<ProductDto> {
+        val created = productService.createProduct(request)
         return ResponseEntity(created, HttpStatus.CREATED)
     }
 

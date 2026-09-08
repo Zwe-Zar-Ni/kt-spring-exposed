@@ -30,6 +30,9 @@ dependencies {
 
 	// ? JetBrains Exposed Starter
 	implementation("org.jetbrains.exposed:exposed-spring-boot4-starter:1.5.0")
+
+	// ? Validation
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 }
 
 kotlin {
