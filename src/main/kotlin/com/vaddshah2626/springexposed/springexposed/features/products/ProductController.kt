@@ -22,18 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam
 class ProductController(private val productService: ProductService) {
 
     @GetMapping
-    fun getAllPaginated(
-        @RequestParam(required = false, defaultValue = "1") page: Int,
-        @RequestParam(required = false, defaultValue = "10") size: Int,
-        @RequestParam(required = false, defaultValue = "") search: String,
-        @RequestParam(required = false, defaultValue = "0") stock: Int,
-    ): ResponseEntity<PageResponse<ProductDto>> {
-        val filter = ProductFilter(
-            search = search.ifEmpty { null },
-            stock = if(stock == 0) null else stock,
-            page = page,
-            size = size,
-        )
+    fun getAllPaginated(filter: ProductFilter): ResponseEntity<PageResponse<ProductDto>> {
         val result = productService.getAllProducts(filter)
         return ResponseEntity.ok(result)
     }
