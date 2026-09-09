@@ -1,5 +1,0 @@
-package com.vaddshah2626.springexposed.springexposed.features.auth.dtos
-
-data class AuthResponse(
-    val token: String
-)
