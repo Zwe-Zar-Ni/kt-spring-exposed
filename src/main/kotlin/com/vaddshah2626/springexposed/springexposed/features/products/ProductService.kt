@@ -11,12 +11,10 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ProductService(private val productRepository: ProductRepository) {
 
-    @Transactional(readOnly = true)
     fun getAllProducts(filter : ProductFilter): PageResponse<ProductDto> {
         return productRepository.findAll(filter)
     }
 
-    @Transactional(readOnly = true)
     fun getProductById(id: Long): ProductDto? {
         return productRepository.findById(id)
     }

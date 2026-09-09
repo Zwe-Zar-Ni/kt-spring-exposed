@@ -12,11 +12,13 @@ import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insertAndGetId
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import kotlin.math.ceil
 
 @Repository
 class ProductRepository {
 
+    @Transactional(readOnly = true)
     fun findAll(filter: ProductFilter): PageResponse<ProductDto> {
         val query = ProductTable.selectAll()
         val totalElements = ProductTable.selectAll().count()
@@ -50,6 +52,7 @@ class ProductRepository {
         )
     }
 
+    @Transactional(readOnly = true)
     fun findById(id: Long): ProductDto? {
         return ProductTable.selectAll().where { ProductTable.id eq id }.map {
             ProductDto(
@@ -61,6 +64,7 @@ class ProductRepository {
         }.singleOrNull()
     }
 
+    @Transactional
     fun save(product: CreateProductRequest): ProductDto {
         val newId = ProductTable.insertAndGetId {
             it[name] = product.name
@@ -72,6 +76,7 @@ class ProductRepository {
         )
     }
 
+    @Transactional
     fun deleteById(id: Long): Boolean {
         return ProductTable.deleteWhere { ProductTable.id eq id } > 0
     }
